@@ -17,15 +17,26 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-          extensions: mbstring, bcmath, dom, pdo_mysql, tokenizer
+          extensions: mbstring, bcmath, dom, pdo_mysql, tokenizer, fileinfo
+          ini-values: post_max_size=256M, upload_max_filesize=256M, memory_limit=512M
 
       - name: Install Composer Dependencies
         run: composer install --no-dev --optimize-autoloader
 
-      - name: Generate Artisan Key
-        run: php artisan key:generate
+      - name: Copy .env Example
+        run: cp .env.example .env
 
-      - name: Remove dev files
+      - name: Generate Artisan Key
+        run: php artisan key:generate --no-interaction
+
+      - name: Clear Cache
+        run: |
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
+          php artisan view:clear
+
+      - name: Remove unnecessary files
         run: rm -rf tests/ node_modules/ .github/
 
       - name: Create ZIP

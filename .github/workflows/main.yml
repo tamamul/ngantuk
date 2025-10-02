@@ -29,17 +29,17 @@ jobs:
       - name: Generate Artisan Key
         run: php artisan key:generate --no-interaction
 
-      - name: Clear Cache
+      - name: Clear Laravel Cache
         run: |
           php artisan config:clear
           php artisan cache:clear
           php artisan route:clear
           php artisan view:clear
 
-      - name: Remove unnecessary files
+      - name: Remove Unnecessary Files
         run: rm -rf tests/ node_modules/ .github/
 
-      - name: Create ZIP
+      - name: Create ZIP of Project
         run: zip -r absensi-guru.zip . -x "*.git*" "*.github*" "vendor/*" "node_modules/*"
 
       - name: Upload ZIP Artifact

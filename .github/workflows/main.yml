@@ -1,0 +1,38 @@
+name: Build Laravel Project
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, bcmath, dom, pdo_mysql, tokenizer
+
+      - name: Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Generate Artisan Key
+        run: php artisan key:generate
+
+      - name: Remove dev files
+        run: rm -rf tests/ node_modules/ .github/
+
+      - name: Create ZIP
+        run: zip -r absensi-guru.zip . -x "*.git*" "*.github*" "vendor/*" "node_modules/*"
+
+      - name: Upload ZIP Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: absensi-guru
+          path: absensi-guru.zip

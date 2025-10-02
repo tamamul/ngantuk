@@ -1,0 +1,84 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Absensi;
+use App\Models\Guru;
+use Carbon\Carbon;
+
+class AbsensiController extends Controller
+{
+    /**
+     * List semua absensi
+     */
+    public function index()
+    {
+        $absensis = Absensi::with('guru')->orderBy('tanggal', 'desc')->get();
+        return view('admin.absensi.index', compact('absensis'));
+    }
+
+    /**
+     * Form tambah absensi manual (opsional, kalau admin mau input sendiri)
+     */
+    public function create()
+    {
+        $gurus = Guru::all();
+        return view('admin.absensi.create', compact('gurus'));
+    }
+
+    /**
+     * Simpan absensi baru
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'guru_id' => 'required|exists:gurus,id',
+            'tanggal' => 'required|date',
+            'status'  => 'required|in:hadir,izin,sakit,alpha',
+        ]);
+
+        Absensi::create($request->all());
+
+        return redirect()->route('admin.absensi.index')->with('success', 'Absensi berhasil ditambahkan!');
+    }
+
+    /**
+     * Edit absensi
+     */
+    public function edit($id)
+    {
+        $absensi = Absensi::findOrFail($id);
+        $gurus   = Guru::all();
+        return view('admin.absensi.edit', compact('absensi', 'gurus'));
+    }
+
+    /**
+     * Update absensi
+     */
+    public function update(Request $request, $id)
+    {
+        $absensi = Absensi::findOrFail($id);
+
+        $request->validate([
+            'guru_id' => 'required|exists:gurus,id',
+            'tanggal' => 'required|date',
+            'status'  => 'required|in:hadir,izin,sakit,alpha',
+        ]);
+
+        $absensi->update($request->all());
+
+        return redirect()->route('admin.absensi.index')->with('success', 'Absensi berhasil diperbarui!');
+    }
+
+    /**
+     * Hapus absensi
+     */
+    public function destroy($id)
+    {
+        $absensi = Absensi::findOrFail($id);
+        $absensi->delete();
+
+        return redirect()->route('admin.absensi.index')->with('success', 'Absensi berhasil dihapus!');
+    }
+}

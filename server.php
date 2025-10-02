@@ -1,0 +1,2 @@
+<?php
+// Laravel server.php

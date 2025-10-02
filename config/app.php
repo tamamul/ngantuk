@@ -1,0 +1,1 @@
+<?php return ['name' => env('APP_NAME', 'Absensi Guru')];

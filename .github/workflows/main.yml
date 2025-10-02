@@ -23,10 +23,10 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-dev --optimize-autoloader
 
-      - name: Copy .env Example
+      - name: Copy .env.example to .env
         run: cp .env.example .env
 
-      - name: Generate Artisan Key
+      - name: Generate APP Key
         run: php artisan key:generate --no-interaction
 
       - name: Clear Laravel Cache
